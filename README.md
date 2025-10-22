@@ -180,8 +180,8 @@ export MAIL_PASSWORD=your_password
 - SMTP 服务器: `smtp.163.com`
 - 端口: `25`
 - 开启STARTTLS加密传输
-- 用户名: `brucexuu20251020@163.com`
-- 密码: `VMS6VhXKifzdMjZr` (仅用于开发环境，请勿在生产环境使用)
+- 用户名: `xxxxxx@163.com`
+- 密码: `xxxxxxxxxxx` (仅用于开发环境，请勿在生产环境使用)
 
 ## 业务流程
 
