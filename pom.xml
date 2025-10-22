@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- Maven模型版本 -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 项目groupId -->
+    <groupId>com.bruce</groupId>
+
+    <!-- 项目artifactId -->
+    <artifactId>myMq</artifactId>
+
+    <!-- 项目版本 -->
+    <version>0.0.1-SNAPSHOT</version>
+
+    <!-- 项目名称 -->
+    <name>myMq</name>
+
+    <!-- 项目描述 -->
+    <description>生产级RocketMQ消息处理系统</description>
+
+    <!-- 打包方式 -->
+    <packaging>pom</packaging>
+
+    <!-- 子模块 -->
+    <modules>
+        <!-- 共享模块 -->
+        <module>shared</module>
+        <!-- 通用模块 -->
+        <module>common</module>
+        <!-- 用户服务模块 -->
+        <module>user-service</module>
+        <!-- 订单服务模块 -->
+        <module>order-service</module>
+        <!-- 库存服务模块 -->
+        <module>inventory-service</module>
+        <!-- 邮件服务模块 -->
+        <module>email-service</module>
+    </modules>
+
+    <!-- 项目属性配置 -->
+    <properties>
+        <!-- Java版本 -->
+        <java.version>1.8</java.version>
+        <!-- 项目构建源编码 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 项目报告输出编码 -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Spring Boot版本 -->
+        <spring-boot.version>2.6.13</spring-boot.version>
+        <!-- Spring Cloud版本 -->
+        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <!-- Spring Cloud Alibaba版本 -->
+        <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
+        <!-- Logback版本 -->
+        <logback.version>1.2.13</logback.version>
+        <!-- SLF4J版本 -->
+        <slf4j.version>1.7.36</slf4j.version>
+        <!-- RocketMQ版本 -->
+        <rocketmq.version>2.2.3</rocketmq.version>
+        <!-- 项目内部模块版本 -->
+        <myMq.version>0.0.1-SNAPSHOT</myMq.version>
+    </properties>
+
+    <!-- 依赖管理 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot依赖管理 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Spring Cloud依赖管理 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Spring Cloud Alibaba依赖管理 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- RocketMQ依赖管理 -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
+            </dependency>
+
+            <!-- 内部模块版本管理 -->
+            <dependency>
+                <groupId>com.bruce</groupId>
+                <artifactId>shared</artifactId>
+                <version>${myMq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bruce</groupId>
+                <artifactId>common</artifactId>
+                <version>${myMq.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 构建配置 -->
+    <build>
+        <!-- 插件管理 -->
+        <pluginManagement>
+            <plugins>
+                <!-- Maven编译插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <!-- Spring Boot Maven插件 -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

@@ -1,0 +1,49 @@
+# ========================================
+# 订单服务配置文件
+# @author BruceXuK
+# ========================================
+
+# 服务端口配置
+server:
+  # 服务器端口
+  port: 8085
+
+# Spring配置
+spring:
+  # 应用配置
+  application:
+    # 应用名称
+    name: order-service
+
+# RocketMQ配置
+rocketmq:
+  # NameServer地址
+  name-server: localhost:9876
+  # 生产者配置
+  producer:
+    # 生产者组
+    group: order-producer-group
+    # 发送超时时间（毫秒）
+    send-message-timeout: 3000
+    # 消息压缩阈值（字节）
+    compress-over-howmuch-body-currently-hold: 1024
+    # 同步发送失败重试次数
+    retry-times-when-send-failed: 2
+    # 异步发送失败重试次数
+    retry-times-when-send-async-failed: 2
+
+# Actuator监控配置
+management:
+  endpoints:
+    web:
+      # 暴露所有端点
+      exposure:
+        include: "*"
+
+# 日志配置
+logging:
+  level:
+    # RocketMQ日志级别
+    org.apache.rocketmq: DEBUG
+    # 项目日志级别
+    com.bruce.mq: DEBUG

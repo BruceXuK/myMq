@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- Maven模型版本 -->
+    <modelVersion>4.0.0</modelVersion>
+    
+    <!-- 父项目配置 -->
+    <parent>
+        <groupId>com.bruce</groupId>
+        <artifactId>myMq</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    
+    <!-- 当前模块的artifactId -->
+    <artifactId>shared</artifactId>
+    
+    <!-- 模块名称 -->
+    <name>shared</name>
+    
+    <!-- 模块描述 -->
+    <description>Shared models and utilities</description>
+    
+    <!-- 打包方式 -->
+    <packaging>jar</packaging>
+
+    <!-- 项目属性配置 -->
+    <properties>
+        <!-- Java版本 -->
+        <java.version>1.8</java.version>
+    </properties>
+
+    <!-- 项目依赖 -->
+    <dependencies>
+        <!-- Jakarta Validation API -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>

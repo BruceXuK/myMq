@@ -1,0 +1,46 @@
+# ========================================
+# 邮件服务配置文件
+# @author BruceXuK
+# ========================================
+
+server:
+  # 服务器端口
+  port: 8088
+
+spring:
+  # 应用配置
+  application:
+    # 应用名称
+    name: email-service
+  # 邮件配置
+  mail:
+    # 邮件服务器主机
+    host: ${MAIL_HOST}
+    # 邮件服务器端口
+    port: ${MAIL_PORT}
+    # 邮箱用户名
+    username: ${MAIL_USERNAME}
+    # 邮箱密码
+    password: ${MAIL_PASSWORD}
+    # 邮件属性配置
+    properties:
+      mail:
+        smtp:
+          # SMTP认证
+          auth: true
+          # STARTTLS加密
+          starttls:
+            enable: true
+
+# RocketMQ配置
+rocketmq:
+  # NameServer地址
+  name-server: localhost:9876
+
+# Actuator监控配置
+management:
+  endpoints:
+    web:
+      # 暴露所有端点
+      exposure:
+        include: "*"
