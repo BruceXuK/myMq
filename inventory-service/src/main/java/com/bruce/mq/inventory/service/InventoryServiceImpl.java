@@ -49,4 +49,15 @@ public class InventoryServiceImpl implements InventoryService {
     public Inventory save(Inventory inventory) {
         return inventoryRepository.save(inventory);
     }
+    
+    /**
+     * 增加库存
+     * 
+     * @param inventory 库存信息
+     * @return 增加结果，成功返回true，失败返回false
+     */
+    @Override
+    public boolean addInventory(Inventory inventory) {
+        return inventoryRepository.addInventory(inventory);
+    }
 }

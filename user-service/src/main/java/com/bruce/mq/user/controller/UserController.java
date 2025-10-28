@@ -3,10 +3,13 @@ package com.bruce.mq.user.controller;
 import com.bruce.mq.user.service.UserServiceImpl;
 import com.bruce.mq.shared.user.dto.UserRegisterRequest;
 import com.bruce.mq.shared.user.model.User;
+import com.bruce.mq.user.rocketmq.MaintenanceNotificationProducer;
+import com.bruce.mq.shared.notification.MaintenanceNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +24,9 @@ public class UserController {
 
     @Autowired
     private UserServiceImpl userService;
+    
+    @Autowired
+    private MaintenanceNotificationProducer maintenanceNotificationProducer;
 
     /**
      * 发送验证码
@@ -98,5 +104,91 @@ public class UserController {
         response.put("message", exists ? "该邮箱已被注册" : "该邮箱可以使用");
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * 发送系统维护通知
+     *
+     * @param request 维护通知请求参数
+     * @return 发送结果
+     */
+    @PostMapping("/maintenance-notification")
+    public ResponseEntity<Map<String, Object>> sendMaintenanceNotification(
+            @RequestBody MaintenanceNotificationRequest request) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 创建维护通知对象
+            MaintenanceNotification notification = new MaintenanceNotification(
+                request.getTitle(),
+                request.getContent(),
+                request.getStartTime(),
+                request.getEndTime(),
+                request.isUrgent()
+            );
+            
+            // 发送维护通知
+            maintenanceNotificationProducer.sendMaintenanceNotification(notification);
+
+            response.put("success", true);
+            response.put("message", "系统维护通知已发送");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "发送系统维护通知失败: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+    
+    /**
+     * 系统维护通知请求参数类
+     */
+    public static class MaintenanceNotificationRequest {
+        private String title;
+        private String content;
+        private LocalDateTime startTime;
+        private LocalDateTime endTime;
+        private boolean urgent;
+        
+        // Getters and setters
+        public String getTitle() {
+            return title;
+        }
+        
+        public void setTitle(String title) {
+            this.title = title;
+        }
+        
+        public String getContent() {
+            return content;
+        }
+        
+        public void setContent(String content) {
+            this.content = content;
+        }
+        
+        public LocalDateTime getStartTime() {
+            return startTime;
+        }
+        
+        public void setStartTime(LocalDateTime startTime) {
+            this.startTime = startTime;
+        }
+        
+        public LocalDateTime getEndTime() {
+            return endTime;
+        }
+        
+        public void setEndTime(LocalDateTime endTime) {
+            this.endTime = endTime;
+        }
+        
+        public boolean isUrgent() {
+            return urgent;
+        }
+        
+        public void setUrgent(boolean urgent) {
+            this.urgent = urgent;
+        }
     }
 }

@@ -15,6 +15,11 @@ spring:
     # 应用名称
     name: order-service
 
+# 邮件配置
+mail:
+  # 默认收件人邮箱地址
+  default-to-address: xxxxxxxxx@qq.com
+
 # RocketMQ配置
 rocketmq:
   # NameServer地址
@@ -22,7 +27,7 @@ rocketmq:
   # 生产者配置
   producer:
     # 生产者组
-    group: order-producer-group
+    group: order-service-producer-group
     # 发送超时时间（毫秒）
     send-message-timeout: 3000
     # 消息压缩阈值（字节）
@@ -31,6 +36,26 @@ rocketmq:
     retry-times-when-send-failed: 2
     # 异步发送失败重试次数
     retry-times-when-send-async-failed: 2
+
+# RocketMQ延迟级别说明:
+# level: 1  - delay: 1s
+# level: 2  - delay: 5s
+# level: 3  - delay: 10s
+# level: 4  - delay: 30s
+# level: 5  - delay: 1m
+# level: 6  - delay: 2m
+# level: 7  - delay: 3m
+# level: 8  - delay: 4m
+# level: 9  - delay: 5m
+# level: 10 - delay: 6m
+# level: 11 - delay: 7m
+# level: 12 - delay: 8m
+# level: 13 - delay: 9m
+# level: 14 - delay: 10m
+# level: 15 - delay: 20m
+# level: 16 - delay: 30m
+# level: 17 - delay: 1h
+# level: 18 - delay: 2h
 
 # Actuator监控配置
 management:
@@ -44,6 +69,6 @@ management:
 logging:
   level:
     # RocketMQ日志级别
-    org.apache.rocketmq: DEBUG
+    org.apache.rocketmq: INFO
     # 项目日志级别
     com.bruce.mq: DEBUG

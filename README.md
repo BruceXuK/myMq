@@ -98,6 +98,7 @@ myMq/
    - 库存查询与扣减
    - 邮件验证码发送
    - 自定义邮件发送
+   - 系统维护通知广播
 
 2. **技术栈**：
    - Spring Boot
@@ -148,6 +149,7 @@ export MAIL_PASSWORD=your_password
 - `POST /user/register` - 用户注册
 - `GET /user/send-code` - 发送验证码到指定邮箱
 - `GET /user/check-email` - 检查邮箱是否已被注册
+- `POST /user/maintenance-notification` - 发送系统维护通知
 
 ### 订单服务接口
 
@@ -189,4 +191,7 @@ export MAIL_PASSWORD=your_password
 2. 用户填写验证码完成注册
 3. 创建订单时，订单服务会发送消息到库存服务扣减库存
 4. 库存扣减完成后，会发送邮件通知给用户
+5. 系统管理员可以发送系统维护通知给所有服务
+6. 订单服务和库存服务收到维护通知后会通过MQ发送邮件请求给邮件服务
+
 

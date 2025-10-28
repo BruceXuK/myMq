@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 
 /**
- * 订单创建消息监听器
- * 负责接收并处理来自订单服务的订单创建消息，扣减库存
+ * 订单取消消息监听器
+ * 负责接收并处理来自订单服务的订单取消消息，回滚库存
  * 
  * @author BruceXuK
  */
@@ -20,38 +20,38 @@ import org.springframework.stereotype.Component;
 @Component
 @RocketMQMessageListener(
     topic = "inventory-topic", 
-    consumerGroup = "inventory-service-order-consumer",
-    selectorExpression = "ORDER_CREATED"
+    consumerGroup = "inventory-service-cancel-consumer",
+    selectorExpression = "ORDER_CANCELLED"
 )
-public class MessageConsumer implements RocketMQListener<Order> {
+public class OrderCancelledListener implements RocketMQListener<Order> {
 
     @Autowired
     private InventoryService inventoryService;
 
     /**
-     * 处理订单创建消息
-     * 当接收到订单创建消息时，根据订单信息扣减相应商品的库存
+     * 处理订单取消消息
+     * 当接收到订单取消消息时，根据订单信息回滚相应商品的库存
      *
      * @param order 订单信息
      */
     @Override
     public void onMessage(Order order) {
         try {
-            log.info("接收到订单创建消息: {}", order);
+            log.info("接收到订单取消消息: {}", order);
             
-            // 根据订单信息扣减库存
+            // 根据订单信息回滚库存（增加库存）
             Inventory inventory = new Inventory();
             inventory.setProductId(order.getProductId());
             inventory.setQuantity(order.getQuantity());
-            boolean success = inventoryService.deductInventory(inventory);
             
+            boolean success = inventoryService.addInventory(inventory);
             if (success) {
-                log.info("成功扣减库存: 商品ID={}, 扣减数量={}", order.getProductId(), order.getQuantity());
+                log.info("成功回滚库存: 商品ID={}, 增加数量={}", order.getProductId(), order.getQuantity());
             } else {
-                log.error("扣减库存失败: 商品ID={}, 扣减数量={}", order.getProductId(), order.getQuantity());
+                log.error("回滚库存失败: 商品ID={}, 增加数量={}", order.getProductId(), order.getQuantity());
             }
         } catch (Exception e) {
-            log.error("处理消息失败", e);
+            log.error("处理订单取消消息失败", e);
         }
     }
 }

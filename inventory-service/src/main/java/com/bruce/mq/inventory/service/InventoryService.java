@@ -33,4 +33,12 @@ public interface InventoryService {
      * @return 保存后的库存信息
      */
     Inventory save(Inventory inventory);
+    
+    /**
+     * 增加库存
+     * 
+     * @param inventory 库存信息
+     * @return 增加结果，成功返回true，失败返回false
+     */
+    boolean addInventory(Inventory inventory);
 }

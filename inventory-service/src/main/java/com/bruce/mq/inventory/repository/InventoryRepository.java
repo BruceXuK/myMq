@@ -51,15 +51,47 @@ public class InventoryRepository {
      * @return 扣减结果，成功返回true，失败返回false
      */
     public boolean deductInventory(Inventory inventory) {
-        Inventory existing = inventories.get(inventory.getProductId());
-        if (existing != null && existing.getQuantity() >= inventory.getQuantity()) {
-            existing.setQuantity(existing.getQuantity() - inventory.getQuantity());
-            System.out.println("成功扣减库存: 商品ID=" + inventory.getProductId() + ", 扣减数量=" + inventory.getQuantity());
-            return true;
-        } else {
-            System.out.println("库存不足: 商品ID=" + inventory.getProductId() + ", 当前库存=" + (existing != null ? existing.getQuantity() : 0) + ", 需要扣减=" + inventory.getQuantity());
+        Inventory existingInventory = inventories.get(inventory.getProductId());
+        if (existingInventory == null) {
+            System.err.println("商品库存不存在，商品ID: " + inventory.getProductId());
             return false;
         }
+        
+        // 检查库存是否充足
+        if (existingInventory.getQuantity() < inventory.getQuantity()) {
+            System.err.println("商品库存不足，商品ID: " + inventory.getProductId() + 
+                              "，当前库存: " + existingInventory.getQuantity() + 
+                              "，需扣减: " + inventory.getQuantity());
+            return false;
+        }
+        
+        // 扣减库存
+        existingInventory.setQuantity(existingInventory.getQuantity() - inventory.getQuantity());
+        System.out.println("成功扣减库存，商品ID: " + inventory.getProductId() + 
+                          "，扣减数量: " + inventory.getQuantity() + 
+                          "，剩余库存: " + existingInventory.getQuantity());
+        return true;
+    }
+    
+    /**
+     * 增加库存
+     * 
+     * @param inventory 库存信息
+     * @return 增加结果，成功返回true，失败返回false
+     */
+    public boolean addInventory(Inventory inventory) {
+        Inventory existingInventory = inventories.get(inventory.getProductId());
+        if (existingInventory == null) {
+            System.err.println("商品库存不存在，商品ID: " + inventory.getProductId());
+            return false;
+        }
+        
+        // 增加库存
+        existingInventory.setQuantity(existingInventory.getQuantity() + inventory.getQuantity());
+        System.out.println("成功增加库存，商品ID: " + inventory.getProductId() + 
+                          "，增加数量: " + inventory.getQuantity() + 
+                          "，当前库存: " + existingInventory.getQuantity());
+        return true;
     }
     
     /**
@@ -73,7 +105,7 @@ public class InventoryRepository {
     }
     
     /**
-     * 保存库存信息
+     * 保存库存
      * 
      * @param inventory 库存信息
      * @return 保存后的库存信息

@@ -15,13 +15,13 @@ spring:
   # 邮件配置
   mail:
     # 邮件服务器主机
-    host: ${MAIL_HOST}
+    host: ${MAIL_HOST:smtp.gmail.com}
     # 邮件服务器端口
-    port: ${MAIL_PORT}
+    port: ${MAIL_PORT:587}
     # 邮箱用户名
-    username: ${MAIL_USERNAME}
+    username: ${MAIL_USERNAME:your_email@gmail.com}
     # 邮箱密码
-    password: ${MAIL_PASSWORD}
+    password: ${MAIL_PASSWORD:your_password}
     # 邮件属性配置
     properties:
       mail:
@@ -31,11 +31,17 @@ spring:
           # STARTTLS加密
           starttls:
             enable: true
+  # 日志配置
+  output:
+    ansi:
+      enabled: ALWAYS
 
 # RocketMQ配置
 rocketmq:
   # NameServer地址
   name-server: localhost:9876
+  producer:
+    group: email-service-producer-group
 
 # Actuator监控配置
 management:
@@ -44,3 +50,9 @@ management:
       # 暴露所有端点
       exposure:
         include: "*"
+
+# 日志级别配置
+logging:
+  level:
+    com.bruce.mq.email: DEBUG
+    org.apache.rocketmq: INFO

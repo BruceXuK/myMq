@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 
  * @author BruceXuK
  */
-@SpringBootApplication(scanBasePackages = "com.bruce.mq.email")
+@SpringBootApplication(scanBasePackages = {"com.bruce.mq.email", "com.bruce.mq.common"})
 public class EmailServiceApplication {
 
     /**

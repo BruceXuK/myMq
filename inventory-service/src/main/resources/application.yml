@@ -17,6 +17,16 @@ spring:
 rocketmq:
   # NameServer地址
   name-server: localhost:9876
+  producer:
+    group:  email-service-producer-group
+    # 发送超时时间（毫秒）
+    send-message-timeout: 3000
+    # 消息压缩阈值（字节）
+    compress-over-howmuch-body-currently-hold: 1024
+    # 同步发送失败重试次数
+    retry-times-when-send-failed: 2
+    # 异步发送失败重试次数
+    retry-times-when-send-async-failed: 2
 
 # Actuator监控配置
 management:
@@ -30,6 +40,6 @@ management:
 logging:
   level:
     # RocketMQ日志级别
-    org.apache.rocketmq: DEBUG
+    org.apache.rocketmq: INFO
     # 项目日志级别
     com.bruce.mq: DEBUG

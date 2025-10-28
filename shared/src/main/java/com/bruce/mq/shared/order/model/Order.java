@@ -1,5 +1,6 @@
 package com.bruce.mq.shared.order.model;
 
+import com.bruce.mq.shared.order.enums.OrderStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -40,7 +41,7 @@ public class Order {
     private BigDecimal price;
     
     /** 订单状态：PENDING(待处理), CONFIRMED(已确认), CANCELLED(已取消) */
-    private String status;
+    private OrderStatus status;
     
 
     
@@ -57,7 +58,7 @@ public class Order {
         this.productId = productId;
         this.quantity = quantity;
         this.price = price;
-        this.status = "PENDING";
+        this.status = OrderStatus.PENDING;
     }
     
     @Override

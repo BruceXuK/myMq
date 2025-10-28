@@ -27,6 +27,11 @@ public enum MessageTag {
     ORDER_CANCELLED("ORDER_CANCELLED"),
     
     /**
+     * 订单取消通知邮件标签
+     */
+    ORDER_CANCELLED_NOTIFICATION("ORDER_CANCELLED_NOTIFICATION"),
+    
+    /**
      * 库存扣减标签
      */
     INVENTORY_DEDUCTED("INVENTORY_DEDUCTED"),
@@ -34,7 +39,17 @@ public enum MessageTag {
     /**
      * 库存增加标签
      */
-    INVENTORY_ADDED("INVENTORY_ADDED");
+    INVENTORY_ADDED("INVENTORY_ADDED"),
+    
+    /**
+     * 系统维护通知标签
+     */
+    SYSTEM_MAINTENANCE("SYSTEM_MAINTENANCE"),
+    
+    /**
+     * 系统维护通知邮件标签
+     */
+    SYSTEM_MAINTENANCE_NOTIFICATION("SYSTEM_MAINTENANCE_NOTIFICATION");
     
     private final String tag;
     

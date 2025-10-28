@@ -2,6 +2,8 @@ package com.bruce.mq.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * 订单服务启动类
@@ -19,6 +21,16 @@ public class OrderApplication {
      */
     public static void main(String[] args) {
         SpringApplication.run(OrderApplication.class, args);
+    }
+    
+    /**
+     * 创建RestTemplate Bean用于服务间调用
+     * 
+     * @return RestTemplate实例
+     */
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 
 }

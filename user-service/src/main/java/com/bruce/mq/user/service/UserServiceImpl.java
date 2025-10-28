@@ -6,6 +6,7 @@ import com.bruce.mq.shared.user.dto.UserRegisterRequest;
 import com.bruce.mq.shared.user.service.UserService;
 import com.bruce.mq.shared.email.model.EmailCode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,8 +105,10 @@ public class UserServiceImpl implements UserService {
         // 发送验证码邮件
         EmailCode emailCode = new EmailCode(email, code, "用户注册验证码",
                 "您的注册验证码是：" + code + "，请在10分钟内使用。");
-        rocketMQTemplate.send("email-topic:EMAIL", MessageBuilder.withPayload(emailCode).build());
+        rocketMQTemplate.syncSend("code-topic:EMAIL",
+            MessageBuilder.withPayload(emailCode).build());
         log.info("已发送验证码邮件，邮箱: " + email + "，验证码: " + code);
+
         return code;
     }
 
