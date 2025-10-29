@@ -1,6 +1,29 @@
 # RocketMQ 微服务消息处理系统
 
-本项目是一个基于 RocketMQ 的微服务消息处理系统，采用事件驱动架构，实现了异步处理各种业务消息的功能。项目通过 Maven 多模块方式管理，包含用户服务、订单服务、库存服务、邮件服务等多个微服务模块，通过消息队列实现服务间解耦。
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.6.13-brightgreen.svg)](#)
+[![RocketMQ](https://img.shields.io/badge/RocketMQ-2.2.3-orange.svg)](#)
+
+本项目是一个基于 RocketMQ 的微服务消息处理系统，采用事件驱动架构，实现了异步处理各种业务消息的功能。项目通过 Maven 多模块方式管理，包含用户服务、订单服务、库存服务、邮件服务、日志服务等多个微服务模块，通过消息队列实现服务间解耦。系统具有高可用性、可扩展性和容错能力，适用于生产环境。
+
+## 目录
+- [项目介绍](#rocketmq-微服务消息处理系统)
+- [项目结构](#项目结构)
+- [功能特性](#功能特性)
+- [技术栈](#技术栈)
+- [架构特点](#架构特点)
+- [模块间依赖关系](#模块间依赖关系)
+- [环境要求](#环境要求)
+- [快速开始](#快速开始)
+- [配置说明](#配置说明)
+- [API 接口](#api-接口)
+- [消息队列配置说明](#消息队列配置说明)
+- [日志服务模块](#日志服务模块)
+- [@Log 注解使用说明](#log-注解使用说明)
+- [安全注意事项](#安全注意事项)
+- [业务流程](#业务流程)
+- [贡献](#贡献)
+- [许可证](#许可证)
 
 ## 项目结构
 
@@ -17,6 +40,7 @@ myMq/
 │           │   ├── model/       # 用户模型类
 │           │   └── service/     # 用户服务接口
 │           ├── message/         # 消息相关枚举
+│           ├── notification/    # 通知相关模型类
 │           ├── OrderDTO.java    # 订单DTO
 │           └── UserDTO.java     # 用户DTO
 ├── common/                     # 通用模块，包含异常处理和安全配置
@@ -39,6 +63,9 @@ myMq/
 │   │       │   └── UserSecurityConfig.java # 用户服务安全配置
 │   │       ├── exception/       # 异常处理类
 │   │       │   └── UserGlobalExceptionHandler.java # 用户服务全局异常处理
+│   │       ├── rocketmq/        # RocketMQ 生产者
+│   │       │   └── MaintenanceNotificationProducer.java # 维护通知生产者
+│   │       │   └── PointToPointMessageProducer.java # 点对点消息生产者
 │   │       └── UserApplication.java # 用户服务主应用类
 │   └── src/main/resources/
 │       └── application.yml      # 用户服务配置文件
@@ -57,6 +84,7 @@ myMq/
 │   │       ├── rocketmq/        # RocketMQ 相关监听器
 │   │       │   └── MaintenanceNotificationListener.java # 维护通知监听器
 │   │       │   └── OrderTimeoutListener.java # 订单超时监听器
+│   │       │   └── PointToPointMessageListener.java # 点对点消息监听器
 │   │       ├── config/          # 安全配置类
 │   │       │   └── OrderSecurityConfig.java # 订单服务安全配置
 │   │       └── OrderApplication.java # 订单服务主应用类
@@ -74,6 +102,8 @@ myMq/
 │   │       │   └── InventoryRepository.java # 库存仓储接口
 │   │       ├── rocketmq/        # RocketMQ 配置和消费者服务
 │   │       │   └── MessageConsumer.java # 消息消费者
+│   │       │   └── MaintenanceNotificationListener.java # 维护通知监听器
+│   │       │   └── OrderCancelledListener.java # 订单取消监听器
 │   │       ├── config/          # 安全配置类
 │   │       │   └── InventorySecurityConfig.java # 库存服务安全配置
 │   │       └── InventoryApplication.java # 库存服务主应用类
@@ -82,16 +112,23 @@ myMq/
 ├── email-service/              # 邮件服务模块
 │   ├── src/main/java/
 │   │   └── com.bruce.mq.email/
+│   │       ├── config/          # 配置类
+│   │       │   └── MailAdminConfig.java # 邮件管理员配置类
+│   │       ├── controller/      # 邮件相关REST API
+│   │       │   └── EmailController.java # 邮件控制器
 │   │       ├── service/         # 邮件发送服务
 │   │       │   └── EmailService.java # 邮件服务实现
 │   │       ├── rocketmq/        # RocketMQ 配置和消费者服务
 │   │       │   ├── EmailMessageListener.java # 邮件消息监听器
+│   │       │   ├── MaintenanceNotificationListener.java # 维护通知邮件监听器
 │   │       │   └── MessageConsumer.java # 消息消费者
 │   │       ├── config/          # 安全配置类
 │   │       │   └── EmailSecurityConfig.java # 邮件服务安全配置
 │   │       └── EmailServiceApplication.java # 邮件服务主应用类
 │   └── src/main/resources/
 │       └── application.yml      # 邮件服务配置文件（含邮箱配置）
+├── log-service/                # 日志服务模块
+├── .env                        # 环境变量配置文件
 └── pom.xml                     # 父项目 Maven 配置
 ```
 
@@ -99,17 +136,20 @@ myMq/
 
 1. **业务功能支持**：
    - 用户注册与管理
-   - 订单创建与管理
+   - 订单创建、支付、取消与管理
    - 库存查询与扣减
    - 邮件验证码发送
    - 自定义邮件发送
    - 系统维护通知广播
    - 订单超时自动取消
+   - 点对点消息传递（只有一个消费者处理）
 
 2. **技术栈**：
-   - Spring Boot
-   - Apache RocketMQ
+   - Spring Boot 2.6.13
+   - Spring Cloud 2021.0.5
+   - Apache RocketMQ 2.2.3
    - JavaMailSender
+   - Elasticsearch（日志服务）
 
 3. **架构特点**：
    - 微服务架构设计
@@ -119,6 +159,7 @@ myMq/
    - 事件驱动架构实现服务间解耦
    - RocketMQ 消息队列实现异步处理
    - 延迟消息实现定时任务处理
+   - 重试机制增强系统稳定性
 
 ## 模块间依赖关系
 
@@ -129,25 +170,66 @@ myMq/
 - `inventory-service`：库存服务模块，负责库存查询和扣减
 - `email-service`：邮件服务模块，负责处理各类邮件发送请求
 
-## 安全注意事项
+## 环境要求
 
-项目当前在配置文件中以明文形式存储了邮箱密码，这在生产环境中是不安全的。
+- Java 8 或更高版本
+- Maven 3.6 或更高版本
+- RocketMQ 4.9 或更高版本
+- Elasticsearch 7.x（用于日志服务）
+- 邮件服务器（如 Gmail、163 等）
 
-### 推荐的安全实践
+## 快速开始
 
-请查看 [SECURITY.md](SECURITY.md) 文件了解更多关于敏感信息处理的安全建议，包括使用环境变量、配置中心或外部密钥管理服务等方式来保护敏感信息。
+### 1. 克隆项目
 
-推荐使用环境变量来设置敏感信息，例如：
-```yaml
-spring:
-  mail:
-    password: ${MAIL_PASSWORD}
-```
-
-并在运行时通过环境变量设置实际值：
 ```bash
-export MAIL_PASSWORD=your_password
+git clone <项目地址>
+cd myMq
 ```
+
+### 2. 配置环境
+
+1. 启动 RocketMQ Name Server 和 Broker
+2. （可选）启动 Elasticsearch（如果需要使用日志服务）
+3. 配置各服务的 `application.yml` 文件或设置环境变量
+
+### 3. 构建项目
+
+```bash
+mvn clean install
+```
+
+### 4. 启动服务
+
+按以下顺序启动服务：
+1. `shared` 模块
+2. `common` 模块
+3. 各个业务服务（user-service, order-service, inventory-service, email-service, log-service）
+
+```bash
+# 示例：启动用户服务
+cd user-service
+mvn spring-boot:run
+```
+
+## 配置说明
+
+系统使用以下配置项，可以通过 `.env` 文件进行配置：
+
+### 邮件服务配置
+- `MAIL_HOST`: 邮件服务器主机地址（默认：smtp.gmail.com）
+- `MAIL_PORT`: 邮件服务器端口（默认：465）
+- `MAIL_USERNAME`: 邮箱用户名（默认：your_email@gmail.com）
+- `MAIL_PASSWORD`: 邮箱密码（默认：your_password）
+- `ADMIN_EMAIL_ADDRESS`: 系统管理员邮箱地址（默认：your_email_address@qq.com）
+
+### RocketMQ 配置
+- `ROCKETMQ_NAMESRV_ADDR`: RocketMQ NameServer 地址（默认：localhost:9876）
+
+### 配置文件加载顺序
+1. 系统环境变量
+2. `.env` 文件（如果存在）
+3. `application.yml` 中的默认值
 
 ## API 接口
 
@@ -157,11 +239,14 @@ export MAIL_PASSWORD=your_password
 - `GET /user/send-code` - 发送验证码到指定邮箱
 - `GET /user/check-email` - 检查邮箱是否已被注册
 - `POST /user/maintenance-notification` - 发送系统维护通知
+- `POST /user/point-to-point-message` - 发送点对点消息
 
 ### 订单服务接口
 
 - `POST /orders` - 创建订单
 - `GET /orders/{id}` - 根据ID获取订单信息
+- `POST /orders/{id}/pay` - 支付订单
+- `POST /orders/{id}/cancel` - 取消订单
 
 ### 库存服务接口
 
@@ -170,7 +255,7 @@ export MAIL_PASSWORD=your_password
 
 ### 邮件服务接口
 
-邮件服务主要通过消息队列接收请求，不提供直接的REST API接口。
+- `POST /email/send-custom` - 发送自定义邮件
 
 ## 消息队列配置说明
 
@@ -182,6 +267,9 @@ export MAIL_PASSWORD=your_password
 - 不同服务有不同的Producer Group配置
   - 用户服务: `user-service-producer`
   - 订单服务: `order-producer-group`
+  - 库存服务: `inventory-producer-group`
+  - 邮件服务: `email-service-producer`
+  - 日志服务: `log-producer-group`
 
 ### RocketMQ 延迟消息级别
 
@@ -208,12 +296,18 @@ export MAIL_PASSWORD=your_password
 | 17    | 1h         |
 | 18    | 2h         |
 
+### RocketMQ 消息模式
+
+项目支持两种消息模式：
+
+1. **广播模式**：系统维护通知等消息会发送给所有相关服务，每个服务都会处理该消息
+2. **点对点模式**：特定任务只需要一个服务实例处理，确保任务不会被重复执行
+
 ### 邮件配置
 
 邮件服务模块配置为 163 邮箱的连接方式：
 - SMTP 服务器: `smtp.163.com`
-- 端口: `25`
-- 开启STARTTLS加密传输
+- 端口: `465` (SSL加密)
 - 用户名: `xxxxxx@163.com`
 - 密码: `xxxxxxxxxxx` (仅用于开发环境，请勿在生产环境使用)
 
@@ -231,5 +325,162 @@ export MAIL_PASSWORD=your_password
    - 更新订单状态为已支付
    - 发送消息到库存服务扣减库存
    - 库存扣减完成后，会发送邮件通知给用户
-6. 系统管理员可以发送系统维护通知给所有服务
-7. 订单服务和库存服务收到维护通知后会通过MQ发送邮件请求给邮件服务
+6. 用户或管理员可以取消订单：
+   - 更新订单状态为已取消
+   - 发送订单取消通知邮件
+7. 系统管理员可以发送系统维护通知给所有服务：
+   - 各个服务收到通知后会通过MQ发送邮件请求给邮件服务
+   - 邮件服务向指定负责人邮箱发送邮件提醒
+8. 订单服务和库存服务收到维护通知后会通过MQ发送邮件请求给邮件服务
+9. 对于只需要一个消费者处理的任务，可以使用点对点消息模式，确保任务不会被重复执行
+
+# 日志服务模块
+
+## 简介
+
+日志服务模块用于收集各个微服务的日志，并通过RocketMQ将日志传输到Elasticsearch中进行存储和查询。
+
+## 架构设计
+
+```
+┌─────────────┐    发送日志消息    ┌──────────────┐    接收日志消息    ┌──────────────────┐
+│   服务A     │ ────────────────→ │  RocketMQ    │ ────────────────→ │   日志服务模块   │
+└─────────────┘                  └──────────────┘                  └──────────────────┘
+                                                                      │
+                                                                      │ 存储日志到ES
+                                                                      ↓
+                                                                ┌──────────────┐
+                                                                │ Elasticsearch│
+                                                                └──────────────┘
+```
+
+## 模块结构
+
+- `log-service`: 日志服务主模块
+- `shared`: 共享模块，包含日志消息模型和生产者
+
+## 核心组件
+
+### LogMessage (共享模块)
+日志消息模型，用于在服务和日志服务之间传输日志数据。
+
+### LogProducer (共享模块)
+日志生产者，用于将日志消息发送到RocketMQ。
+
+### Log (日志服务)
+日志实体类，用于在Elasticsearch中存储日志。
+
+### LogMessageListener (日志服务)
+RocketMQ消息监听器，接收日志消息并存储到Elasticsearch。
+
+### LogService (日志服务)
+日志服务层，处理日志的存储和查询逻辑。
+
+### LogRepository (日志服务)
+日志数据访问层，与Elasticsearch交互。
+
+### LogController (日志服务)
+REST API控制器，提供日志查询接口。
+
+## 使用方法
+
+1. 在各服务中引入shared模块依赖
+2. 配置logback-spring.xml使用MqLogAppender
+3. 启动RocketMQ和Elasticsearch
+4. 启动日志服务和其他微服务
+
+## API接口
+
+- `GET /logs/service/{service}?startTime=&endTime=` - 根据服务名称和时间范围查询日志
+- `GET /logs/level/{level}` - 根据日志级别查询日志
+- `GET /logs/trace/{traceId}` - 根据追踪ID查询日志
+
+## 配置说明
+
+### 日志服务配置 (application.yml)
+```yaml
+server:
+  port: 8089
+
+spring:
+  application:
+    name: log-service
+  elasticsearch:
+    uris: ${ES_URI:http://localhost:9200}
+
+rocketmq:
+  name-server: ${ROCKETMQ_NAMESRV_ADDR:localhost:9876}
+  producer:
+    group: log-producer-group
+```
+
+### 其他服务配置
+其他微服务需要配置RocketMQ连接信息:
+```yaml
+rocketmq:
+  name-server: ${ROCKETMQ_NAMESRV_ADDR:localhost:9876}
+```
+
+## @Log 注解使用说明
+
+### 简介
+@Log 注解是一个自定义注解，用于自动记录方法的访问日志，包括请求参数、路径、IP地址等信息，并通过MQ发送到日志服务存储到Elasticsearch中。
+
+### 使用方法
+
+1. 在需要记录日志的方法上添加 @Log 注解：
+
+```java
+@RestController
+@RequestMapping("/user")
+public class UserController {
+    
+    @Log("查询用户信息")
+    @GetMapping("/info")
+    public UserInfo getUserInfo(@RequestParam String userId) {
+        // 业务逻辑
+        return userInfo;
+    }
+    
+    @Log(value = "创建用户", recordParams = true, recordResult = true)
+    @PostMapping("/create")
+    public Result createUser(@RequestBody UserCreateRequest request) {
+        // 业务逻辑
+        return result;
+    }
+}
+```
+
+### 注解参数说明
+
+- `value`: 操作描述信息，默认为空
+- `recordParams`: 是否记录请求参数，默认为true
+- `recordResult`: 是否记录返回结果，默认为false
+
+### 自动记录的信息
+
+使用 @Log 注解后，系统会自动记录以下信息：
+- 请求URL
+- 请求方法 (GET, POST等)
+- 请求参数
+- 请求IP地址
+- 执行时间
+- User-Agent
+- 响应状态码
+- 服务名称
+- 类名和方法名
+- 时间戳
+
+### 注意事项
+
+1. @Log 注解仅适用于Spring管理的Bean中的方法
+2. 需要确保服务中正确配置了MQ连接信息
+3. 方法必须是通过HTTP请求访问的，才能获取到完整的请求信息
+
+## 贡献
+
+欢迎提交 Issue 或 Pull Request 来帮助改进本项目。
+
+## 许可证
+
+本项目采用 MIT 许可证，详见 [LICENSE](LICENSE) 文件。

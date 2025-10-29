@@ -49,7 +49,12 @@ public enum MessageTag {
     /**
      * 系统维护通知邮件标签
      */
-    SYSTEM_MAINTENANCE_NOTIFICATION("SYSTEM_MAINTENANCE_NOTIFICATION");
+    SYSTEM_MAINTENANCE_NOTIFICATION("SYSTEM_MAINTENANCE_NOTIFICATION"),
+    
+    /**
+     * 点对点消息标签
+     */
+    POINT_TO_POINT("POINT_TO_POINT");
     
     private final String tag;
     

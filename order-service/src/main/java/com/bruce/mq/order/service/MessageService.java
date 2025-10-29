@@ -53,4 +53,11 @@ public interface MessageService {
      * @param order 订单信息
      */
     void sendOrderTimeoutNotificationEmail(Order order);
+    
+    /**
+     * 发送支付成功通知邮件
+     *
+     * @param order 订单信息
+     */
+    void sendPaymentSuccessEmail(Order order);
 }

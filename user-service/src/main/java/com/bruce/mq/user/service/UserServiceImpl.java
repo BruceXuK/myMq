@@ -1,16 +1,20 @@
 package com.bruce.mq.user.service;
 
+import com.bruce.mq.user.config.MailConfig;
 import com.bruce.mq.user.repository.UserRepository;
 import com.bruce.mq.shared.user.model.User;
 import com.bruce.mq.shared.user.dto.UserRegisterRequest;
 import com.bruce.mq.shared.user.service.UserService;
 import com.bruce.mq.shared.email.model.EmailCode;
+import com.bruce.mq.shared.email.model.EmailRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.common.message.MessageConst;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * 用户服务实现类
@@ -25,7 +29,10 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private RocketMQTemplate rocketMQTemplate;
+    private RestTemplate restTemplate;
+    
+    @Autowired
+    private MailConfig mailConfig;
 
     /**
      * 用户注册
@@ -105,8 +112,9 @@ public class UserServiceImpl implements UserService {
         // 发送验证码邮件
         EmailCode emailCode = new EmailCode(email, code, "用户注册验证码",
                 "您的注册验证码是：" + code + "，请在10分钟内使用。");
-        rocketMQTemplate.syncSend("code-topic:EMAIL",
-            MessageBuilder.withPayload(emailCode).build());
+        
+        // 通过HTTP调用邮件服务发送邮件
+        sendEmailViaHttp(emailCode);
         log.info("已发送验证码邮件，邮箱: " + email + "，验证码: " + code);
 
         return code;
@@ -123,5 +131,41 @@ public class UserServiceImpl implements UserService {
     public boolean verifyCode(String email, String code) {
         String storedCode = userRepository.getVerificationCode(email);
         return storedCode != null && storedCode.equals(code);
+    }
+    
+    /**
+     * 通过HTTP调用邮件服务发送邮件
+     * 
+     * @param emailCode 邮件验证码对象
+     */
+    private void sendEmailViaHttp(EmailCode emailCode) {
+        try {
+            String url = mailConfig.getEmailServiceUrl() + "/email/send-custom";
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            // 转换为EmailRequest对象
+            EmailRequest emailRequest = new EmailRequest(
+                emailCode.getEmailAddress(),
+                emailCode.getSubject(),
+                emailCode.getContent()
+            );
+            
+            HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest, headers);
+            
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                log.error("通过HTTP调用邮件服务发送邮件失败，状态码: {}", response.getStatusCode());
+                throw new RuntimeException("邮件服务调用失败，状态码: " + response.getStatusCode());
+            }
+            
+            log.info("通过HTTP调用邮件服务发送邮件成功，收件人: {}, 主题: {}", 
+                emailCode.getEmailAddress(), emailCode.getSubject());
+        } catch (Exception e) {
+            log.error("通过HTTP调用邮件服务发送邮件异常", e);
+            throw new RuntimeException("邮件服务调用异常", e);
+        }
     }
 }

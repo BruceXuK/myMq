@@ -60,4 +60,19 @@ public class InventoryServiceImpl implements InventoryService {
     public boolean addInventory(Inventory inventory) {
         return inventoryRepository.addInventory(inventory);
     }
+    
+    /**
+     * 恢复库存（订单取消时调用）
+     * 
+     * @param productId 商品ID
+     * @param quantity 恢复的数量
+     * @return 恢复结果，成功返回true，失败返回false
+     */
+    @Override
+    public boolean restoreInventory(Long productId, Integer quantity) {
+        Inventory inventory = new Inventory();
+        inventory.setProductId(productId);
+        inventory.setQuantity(quantity);
+        return inventoryRepository.addInventory(inventory);
+    }
 }

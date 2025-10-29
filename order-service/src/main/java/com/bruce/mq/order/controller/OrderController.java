@@ -2,7 +2,6 @@ package com.bruce.mq.order.controller;
 
 import com.bruce.mq.shared.order.model.Order;
 import com.bruce.mq.order.service.OrderService;
-import com.bruce.mq.order.service.OrderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +17,6 @@ public class OrderController {
     
     @Autowired
     private OrderService orderService;
-    
-    @Autowired
-    private OrderServiceImpl orderServiceImpl;
     
     /**
      * 创建订单接口
@@ -52,7 +48,7 @@ public class OrderController {
      */
     @PostMapping("/{id}/pay")
     public boolean payOrder(@PathVariable Long id) {
-        return orderServiceImpl.payOrder(id);
+        return orderService.payOrder(id);
     }
     
     /**
@@ -63,6 +59,6 @@ public class OrderController {
      */
     @PostMapping("/{id}/cancel")
     public boolean cancelOrder(@PathVariable Long id) {
-        return orderServiceImpl.cancelOrder(id);
+        return orderService.cancelOrder(id);
     }
 }

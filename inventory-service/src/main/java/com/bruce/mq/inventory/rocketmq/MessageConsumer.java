@@ -1,57 +1,37 @@
 package com.bruce.mq.inventory.rocketmq;
 
-import com.bruce.mq.inventory.service.InventoryService;
-import com.bruce.mq.shared.inventory.model.Inventory;
-import com.bruce.mq.shared.order.model.Order;
+import com.bruce.mq.shared.message.model.PointToPointMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 /**
- * 订单创建消息监听器
- * 负责接收并处理来自订单服务的订单创建消息，扣减库存
- * 
+ * 消息消费者
+ * 负责接收并处理消息
+ *
  * @author BruceXuK
  */
 @Slf4j
 @Component
 @RocketMQMessageListener(
-    topic = "inventory-topic", 
-    consumerGroup = "inventory-service-order-consumer",
-    selectorExpression = "ORDER_CREATED"
+        topic = "test-topic",
+        consumerGroup = "inventory-consumer-group"
 )
-public class MessageConsumer implements RocketMQListener<Order> {
-
-    @Autowired
-    private InventoryService inventoryService;
+public class MessageConsumer implements RocketMQListener<PointToPointMessage> {
 
     /**
-     * 处理订单创建消息
-     * 当接收到订单创建消息时，根据订单信息扣减相应商品的库存
+     * 处理消息
      *
-     * @param order 订单信息
+     * @param message 消息
      */
     @Override
-    public void onMessage(Order order) {
+    public void onMessage(PointToPointMessage message) {
         try {
-            log.info("接收到订单创建消息: {}", order);
-            
-            // 根据订单信息扣减库存
-            Inventory inventory = new Inventory();
-            inventory.setProductId(order.getProductId());
-            inventory.setQuantity(order.getQuantity());
-            boolean success = inventoryService.deductInventory(inventory);
-            
-            if (success) {
-                log.info("成功扣减库存: 商品ID={}, 扣减数量={}", order.getProductId(), order.getQuantity());
-            } else {
-                log.error("扣减库存失败: 商品ID={}, 扣减数量={}", order.getProductId(), order.getQuantity());
-            }
+            log.info("库存服务收到消息: {}", message);
+            log.info("库存服务处理消息完成");
         } catch (Exception e) {
-            log.error("处理消息失败", e);
+            log.error("库存服务处理消息失败: " + message, e);
         }
     }
 }

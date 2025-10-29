@@ -4,12 +4,14 @@ import com.bruce.mq.user.service.UserServiceImpl;
 import com.bruce.mq.shared.user.dto.UserRegisterRequest;
 import com.bruce.mq.shared.user.model.User;
 import com.bruce.mq.user.rocketmq.MaintenanceNotificationProducer;
+import com.bruce.mq.user.rocketmq.PointToPointMessageProducer;
 import com.bruce.mq.shared.notification.MaintenanceNotification;
+import com.bruce.mq.shared.notification.MaintenanceNotificationRequest;
+import com.bruce.mq.shared.message.model.PointToPointMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +29,9 @@ public class UserController {
     
     @Autowired
     private MaintenanceNotificationProducer maintenanceNotificationProducer;
+    
+    @Autowired
+    private PointToPointMessageProducer pointToPointMessageProducer;
 
     /**
      * 发送验证码
@@ -141,54 +146,27 @@ public class UserController {
     }
     
     /**
-     * 系统维护通知请求参数类
+     * 发送点对点消息
+     *
+     * @param message 点对点消息对象
+     * @return 发送结果
      */
-    public static class MaintenanceNotificationRequest {
-        private String title;
-        private String content;
-        private LocalDateTime startTime;
-        private LocalDateTime endTime;
-        private boolean urgent;
-        
-        // Getters and setters
-        public String getTitle() {
-            return title;
-        }
-        
-        public void setTitle(String title) {
-            this.title = title;
-        }
-        
-        public String getContent() {
-            return content;
-        }
-        
-        public void setContent(String content) {
-            this.content = content;
-        }
-        
-        public LocalDateTime getStartTime() {
-            return startTime;
-        }
-        
-        public void setStartTime(LocalDateTime startTime) {
-            this.startTime = startTime;
-        }
-        
-        public LocalDateTime getEndTime() {
-            return endTime;
-        }
-        
-        public void setEndTime(LocalDateTime endTime) {
-            this.endTime = endTime;
-        }
-        
-        public boolean isUrgent() {
-            return urgent;
-        }
-        
-        public void setUrgent(boolean urgent) {
-            this.urgent = urgent;
+    @PostMapping("/point-to-point-message")
+    public ResponseEntity<Map<String, Object>> sendPointToPointMessage(
+            @RequestBody PointToPointMessage message) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 发送点对点消息
+            pointToPointMessageProducer.sendPointToPointMessage(message);
+
+            response.put("success", true);
+            response.put("message", "点对点消息已发送");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "发送点对点消息失败: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
         }
     }
 }

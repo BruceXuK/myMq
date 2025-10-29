@@ -74,6 +74,9 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.CONFIRMED);
         orderRepository.save(order);
 
+        // 发送支付成功邮件
+        messageService.sendPaymentSuccessEmail(order);
+
         // 发送消息到库存服务扣减库存
         messageService.deductInventory(order);
 

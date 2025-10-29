@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- 项目groupId -->
-    <groupId>com.bruce</groupId>
+    <groupId>com.bruce.mq</groupId>
 
     <!-- 项目artifactId -->
     <artifactId>myMq</artifactId>
 
     <!-- 项目版本 -->
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 
     <!-- 项目名称 -->
     <name>myMq</name>
@@ -36,6 +36,8 @@
         <module>inventory-service</module>
         <!-- 邮件服务模块 -->
         <module>email-service</module>
+        <!-- 日志服务模块 -->
+        <module>log-service</module>
     </modules>
 
     <!-- 项目属性配置 -->
@@ -53,13 +55,13 @@
         <!-- Spring Cloud Alibaba版本 -->
         <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
         <!-- Logback版本 -->
-        <logback.version>1.2.13</logback.version>
+        <logback.version>1.3.0</logback.version>
         <!-- SLF4J版本 -->
         <slf4j.version>1.7.36</slf4j.version>
         <!-- RocketMQ版本 -->
         <rocketmq.version>2.2.3</rocketmq.version>
         <!-- 项目内部模块版本 -->
-        <myMq.version>0.0.1-SNAPSHOT</myMq.version>
+        <myMq.version>1.0-SNAPSHOT</myMq.version>
     </properties>
 
     <!-- 依赖管理 -->
@@ -99,13 +101,18 @@
 
             <!-- 内部模块版本管理 -->
             <dependency>
-                <groupId>com.bruce</groupId>
+                <groupId>com.bruce.mq</groupId>
                 <artifactId>shared</artifactId>
                 <version>${myMq.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.bruce</groupId>
+                <groupId>com.bruce.mq</groupId>
                 <artifactId>common</artifactId>
+                <version>${myMq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bruce.mq</groupId>
+                <artifactId>log-service</artifactId>
                 <version>${myMq.version}</version>
             </dependency>
 

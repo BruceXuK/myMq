@@ -1,0 +1,52 @@
+# ========================================
+# 日志服务配置文件
+# ========================================
+
+server:
+  # 服务器端口
+  port: 8091
+
+spring:
+  # 应用配置
+  application:
+    # 应用名称
+    name: log-service
+
+  # Elasticsearch配置
+  elasticsearch:
+    uris: ${ES_URI:http://localhost:9200}
+    username: ${ES_USERNAME:}
+    password: ${ES_PASSWORD:}
+
+  # 日志配置
+  output:
+    ansi:
+      enabled: ALWAYS
+
+# RocketMQ配置
+rocketmq:
+  # NameServer地址
+  name-server: ${ROCKETMQ_NAMESRV_ADDR:localhost:9876}
+  producer:
+    # 生产者组名
+    group: log-producer-group
+  # 消费者配置
+  consumer:
+    # 消费者启动失败重试次数
+    retry-times: 3
+    # 消费者启动延迟时间(毫秒)
+    delay-time: 5000
+
+# Actuator监控配置
+management:
+  endpoints:
+    web:
+      # 暴露所有端点
+      exposure:
+        include: "*"
+
+# 日志级别配置
+logging:
+  level:
+    com.bruce.mq.log: DEBUG
+    org.apache.rocketmq: WARN

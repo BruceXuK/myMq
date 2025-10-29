@@ -1,19 +1,16 @@
 package com.bruce.mq.inventory.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
  * 库存服务安全配置类
- * 
- * @author BruceXuK
+ * 允许所有请求匿名访问
  */
 @Configuration
 @EnableWebSecurity
-@Order(1)
 public class InventorySecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
@@ -24,25 +21,18 @@ public class InventorySecurityConfig extends WebSecurityConfigurerAdapter {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // 禁用 CSRF 保护，因为这是一个微服务
+        // 禁用 CSRF 保护
         http.csrf().disable()
-                // 禁用 frame 嵌套，防止点击劫持
+                // 禁用 frame 嵌套
                 .headers().frameOptions().disable()
                 .and()
-                // 对所有请求进行认证
+                // 允许所有请求匿名访问
                 .authorizeRequests()
-                // 允许访问 Actuator endpoints
-                .antMatchers("/actuator/**").permitAll()
-                // 允许访问库存相关接口
-                .antMatchers("/inventory/**").permitAll()
-                // 允许其他所有请求
                 .anyRequest().permitAll()
                 .and()
-                // 禁用 HTTP 基本认证以避免401问题
-                .httpBasic().disable()
-                // 禁用表单登录以避免重定向到登录页面
+                // 禁用表单登录
                 .formLogin().disable()
-                // 禁用登出功能
-                .logout().disable();
+                // 禁用HTTP基本认证
+                .httpBasic().disable();
     }
 }

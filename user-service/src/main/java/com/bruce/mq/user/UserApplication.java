@@ -2,6 +2,7 @@ package com.bruce.mq.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * 用户服务启动类
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author BruceXuK
  */
 @SpringBootApplication
+@ComponentScan(basePackages = {"com.bruce.mq.user", "com.bruce.mq.shared"})
 public class UserApplication {
 
     /**

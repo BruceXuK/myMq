@@ -1,6 +1,8 @@
 package com.bruce.mq.inventory.repository;
 
 import com.bruce.mq.shared.inventory.model.Inventory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
@@ -16,6 +18,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Repository
 public class InventoryRepository {
+    
+    private static final Logger logger = LoggerFactory.getLogger(InventoryRepository.class);
     
     /** 存储所有库存的并发安全Map，以商品ID为键 */
     private final ConcurrentHashMap<Long, Inventory> inventories = new ConcurrentHashMap<>();
@@ -53,23 +57,25 @@ public class InventoryRepository {
     public boolean deductInventory(Inventory inventory) {
         Inventory existingInventory = inventories.get(inventory.getProductId());
         if (existingInventory == null) {
-            System.err.println("商品库存不存在，商品ID: " + inventory.getProductId());
+            logger.error("商品库存不存在，商品ID: {}", inventory.getProductId());
             return false;
         }
         
         // 检查库存是否充足
         if (existingInventory.getQuantity() < inventory.getQuantity()) {
-            System.err.println("商品库存不足，商品ID: " + inventory.getProductId() + 
-                              "，当前库存: " + existingInventory.getQuantity() + 
-                              "，需扣减: " + inventory.getQuantity());
+            logger.error("商品库存不足，商品ID: {}，当前库存: {}，需扣减: {}", 
+                        inventory.getProductId(), 
+                        existingInventory.getQuantity(), 
+                        inventory.getQuantity());
             return false;
         }
         
         // 扣减库存
         existingInventory.setQuantity(existingInventory.getQuantity() - inventory.getQuantity());
-        System.out.println("成功扣减库存，商品ID: " + inventory.getProductId() + 
-                          "，扣减数量: " + inventory.getQuantity() + 
-                          "，剩余库存: " + existingInventory.getQuantity());
+        logger.info("成功扣减库存，商品ID: {}，扣减数量: {}，剩余库存: {}", 
+                   inventory.getProductId(), 
+                   inventory.getQuantity(), 
+                   existingInventory.getQuantity());
         return true;
     }
     
@@ -82,15 +88,16 @@ public class InventoryRepository {
     public boolean addInventory(Inventory inventory) {
         Inventory existingInventory = inventories.get(inventory.getProductId());
         if (existingInventory == null) {
-            System.err.println("商品库存不存在，商品ID: " + inventory.getProductId());
+            logger.error("商品库存不存在，商品ID: {}", inventory.getProductId());
             return false;
         }
         
         // 增加库存
         existingInventory.setQuantity(existingInventory.getQuantity() + inventory.getQuantity());
-        System.out.println("成功增加库存，商品ID: " + inventory.getProductId() + 
-                          "，增加数量: " + inventory.getQuantity() + 
-                          "，当前库存: " + existingInventory.getQuantity());
+        logger.info("成功增加库存，商品ID: {}，增加数量: {}，当前库存: {}", 
+                   inventory.getProductId(), 
+                   inventory.getQuantity(), 
+                   existingInventory.getQuantity());
         return true;
     }
     

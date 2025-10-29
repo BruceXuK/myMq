@@ -41,4 +41,13 @@ public interface InventoryService {
      * @return 增加结果，成功返回true，失败返回false
      */
     boolean addInventory(Inventory inventory);
+    
+    /**
+     * 恢复库存（订单取消时调用）
+     * 
+     * @param productId 商品ID
+     * @param quantity 恢复的数量
+     * @return 恢复结果，成功返回true，失败返回false
+     */
+    boolean restoreInventory(Long productId, Integer quantity);
 }
