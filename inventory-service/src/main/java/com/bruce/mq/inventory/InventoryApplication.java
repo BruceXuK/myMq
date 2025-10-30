@@ -1,9 +1,11 @@
 package com.bruce.mq.inventory;
 
+import com.bruce.mq.shared.util.StartupTimeTracker;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.messaging.converter.StringMessageConverter;
 
 /**
@@ -22,6 +24,10 @@ public class InventoryApplication {
      * @param args 命令行参数
      */
     public static void main(String[] args) {
-        SpringApplication.run(InventoryApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(InventoryApplication.class, args);
+        
+        // 打印启动时间报告
+        StartupTimeTracker startupTimeTracker = context.getBean(StartupTimeTracker.class);
+        startupTimeTracker.printReport();
     }
 }

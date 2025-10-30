@@ -12,7 +12,7 @@ spring:
   application:
     # 应用名称
     name: user-service
-  
+
   # Nacos配置
   cloud:
     nacos:
@@ -23,6 +23,8 @@ spring:
 
 # RocketMQ配置
 rocketmq:
+  # 是否启用RocketMQ
+  enable: true
   # NameServer地址
   name-server: ${ROCKETMQ_NAMESRV_ADDR:localhost:9876}
   # 生产者配置
@@ -30,23 +32,17 @@ rocketmq:
     # 生产者组
     group: user-service-producer
     # 消息发送超时时间(毫秒)
-    send-message-timeout: 10000
+    send-message-timeout: 3000
     # 消息发送失败重试次数
-    retry-times-when-send-failed: 3
+    retry-times-when-send-failed: 2
+    # 异步消息发送失败重试次数
+    retry-times-when-send-async: 2
   # 消费者配置
   consumer:
     # 消费者启动失败重试次数
-    retry-times: 3
+    retry-times: 0
     # 消费者启动延迟时间(毫秒)
     delay-time: 5000
-
-# Actuator监控配置
-management:
-  endpoints:
-    web:
-      # 暴露所有端点
-      exposure:
-        include: "*"
 
 # 日志级别配置
 logging:

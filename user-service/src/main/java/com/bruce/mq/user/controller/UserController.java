@@ -1,5 +1,6 @@
 package com.bruce.mq.user.controller;
 
+import com.bruce.mq.shared.order.message.model.PointToPointMessage;
 import com.bruce.mq.user.service.UserServiceImpl;
 import com.bruce.mq.shared.user.dto.UserRegisterRequest;
 import com.bruce.mq.shared.user.model.User;
@@ -7,7 +8,6 @@ import com.bruce.mq.user.rocketmq.MaintenanceNotificationProducer;
 import com.bruce.mq.user.rocketmq.PointToPointMessageProducer;
 import com.bruce.mq.shared.notification.MaintenanceNotification;
 import com.bruce.mq.shared.notification.MaintenanceNotificationRequest;
-import com.bruce.mq.shared.message.model.PointToPointMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

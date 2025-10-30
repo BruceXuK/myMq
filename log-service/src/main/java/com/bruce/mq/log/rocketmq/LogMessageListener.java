@@ -7,6 +7,7 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  * @author BruceXuK
  */
 @Component
+@ConditionalOnProperty(name = "rocketmq.enable", havingValue = "true", matchIfMissing = false)
 @RocketMQMessageListener(
         topic = "log-topic",
         consumerGroup = "log-consumer-group"

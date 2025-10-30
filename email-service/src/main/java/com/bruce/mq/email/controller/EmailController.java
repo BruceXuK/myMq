@@ -1,7 +1,7 @@
 package com.bruce.mq.email.controller;
 
-import com.bruce.mq.shared.email.model.EmailRequest;
 import com.bruce.mq.email.service.EmailService;
+import com.bruce.mq.shared.email.model.EmailRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

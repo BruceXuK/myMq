@@ -35,14 +35,14 @@ public class MaintenanceNotificationListener implements RocketMQListener<Mainten
     // 从配置文件或环境变量中获取负责人邮箱地址
     @Value("${app.mail.admin.email-address:your_email_address@qq.com}")
     private String adminEmail;
-    
+
     // 从配置文件或环境变量中获取API网关地址
     @Value("${gateway.url:http://localhost:8092}")
     private String gatewayUrl;
-    
+
     @Autowired
     private RestTemplate restTemplate;
-    
+
     @Autowired
     private Environment environment;
 
@@ -118,14 +118,14 @@ public class MaintenanceNotificationListener implements RocketMQListener<Mainten
 
             // 通过HTTP调用邮件服务发送邮件
             String url = gatewayUrl + "/api/emails/send-custom";
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            
+
             HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest, headers);
-            
+
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-            
+
             if (response.getStatusCode().is2xxSuccessful()) {
                 log.info("已通过HTTP调用发送系统维护通知邮件，收件人: {}", adminEmail);
             } else {

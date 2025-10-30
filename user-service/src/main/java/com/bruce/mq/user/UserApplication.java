@@ -1,8 +1,10 @@
 package com.bruce.mq.user;
 
+import com.bruce.mq.shared.util.StartupTimeTracker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -21,7 +23,11 @@ public class UserApplication {
      * @param args 命令行参数
      */
     public static void main(String[] args) {
-        SpringApplication.run(UserApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(UserApplication.class, args);
+        
+        // 打印启动时间报告
+        StartupTimeTracker startupTimeTracker = context.getBean(StartupTimeTracker.class);
+        startupTimeTracker.printReport();
     }
 
 }

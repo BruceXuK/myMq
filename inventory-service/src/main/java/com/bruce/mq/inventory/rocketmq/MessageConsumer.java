@@ -1,6 +1,6 @@
 package com.bruce.mq.inventory.rocketmq;
 
-import com.bruce.mq.shared.message.model.PointToPointMessage;
+import com.bruce.mq.shared.order.message.model.PointToPointMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;

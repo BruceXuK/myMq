@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!-- Maven模型版本 -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 父项目配置 -->
+    <parent>
+        <groupId>com.bruce.mq</groupId>
+        <artifactId>shared</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <!-- 当前模块的artifactId -->
+    <artifactId>shared-email</artifactId>
+
+    <!-- 模块名称 -->
+    <name>shared-email</name>
+
+    <!-- 模块描述 -->
+    <description>Email shared components</description>
+
+    <!-- 打包方式 -->
+    <packaging>jar</packaging>
+
+    <!-- 项目依赖 -->
+    <dependencies>
+        <!-- 核心共享模块 -->
+        <dependency>
+            <groupId>com.bruce.mq</groupId>
+            <artifactId>shared-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

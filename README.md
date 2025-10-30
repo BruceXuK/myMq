@@ -51,6 +51,12 @@ myMq/
 │           │   └── BusinessException.java # 业务异常类
 │           └── security/        # 通用安全配置
 │               └── CommonSecurityConfig.java # 安全配置类
+├── api-gateway/                # API网关模块
+│   ├── src/main/java/
+│   │   └── com.bruce.mq.gateway/
+│   │       └── ApiGatewayApplication.java # API网关主应用类
+│   └── src/main/resources/
+│       └── application.yml      # API网关配置文件
 ├── user-service/               # 用户服务模块
 │   ├── src/main/java/
 │   │   └── com.bruce.mq.user/
@@ -160,11 +166,13 @@ myMq/
    - RocketMQ 消息队列实现异步处理
    - 延迟消息实现定时任务处理
    - 重试机制增强系统稳定性
+   - API网关统一调度服务调用
 
 ## 模块间依赖关系
 
 - `shared`：提供公共模型类和枚举，被所有其他模块依赖
 - `common`：提供通用异常处理和安全配置，被所有服务模块依赖
+- `api-gateway`：API网关模块，作为服务统一入口
 - `user-service`：用户服务模块，负责用户注册和管理功能
 - `order-service`：订单服务模块，负责订单创建和管理
 - `inventory-service`：库存服务模块，负责库存查询和扣减
@@ -204,7 +212,8 @@ mvn clean install
 按以下顺序启动服务：
 1. `shared` 模块
 2. `common` 模块
-3. 各个业务服务（user-service, order-service, inventory-service, email-service, log-service）
+3. `api-gateway` 模块
+4. 各个业务服务（user-service, order-service, inventory-service, email-service, log-service）
 
 ```bash
 # 示例：启动用户服务
@@ -226,6 +235,9 @@ mvn spring-boot:run
 ### RocketMQ 配置
 - `ROCKETMQ_NAMESRV_ADDR`: RocketMQ NameServer 地址（默认：localhost:9876）
 
+### API网关配置
+- `gateway.url`: API网关地址（默认：http://localhost:8092）
+
 ### 配置文件加载顺序
 1. 系统环境变量
 2. `.env` 文件（如果存在）
@@ -235,27 +247,27 @@ mvn spring-boot:run
 
 ### 用户服务接口
 
-- `POST /user/register` - 用户注册
-- `GET /user/send-code` - 发送验证码到指定邮箱
-- `GET /user/check-email` - 检查邮箱是否已被注册
-- `POST /user/maintenance-notification` - 发送系统维护通知
-- `POST /user/point-to-point-message` - 发送点对点消息
+- `POST /api/user/register` - 用户注册
+- `GET /api/user/send-code` - 发送验证码到指定邮箱
+- `GET /api/user/check-email` - 检查邮箱是否已被注册
+- `POST /api/user/maintenance-notification` - 发送系统维护通知
+- `POST /api/user/point-to-point-message` - 发送点对点消息
 
 ### 订单服务接口
 
-- `POST /orders` - 创建订单
-- `GET /orders/{id}` - 根据ID获取订单信息
-- `POST /orders/{id}/pay` - 支付订单
-- `POST /orders/{id}/cancel` - 取消订单
+- `POST /api/orders` - 创建订单
+- `GET /api/orders/{id}` - 根据ID获取订单信息
+- `POST /api/orders/{id}/pay` - 支付订单
+- `POST /api/orders/{id}/cancel` - 取消订单
 
 ### 库存服务接口
 
-- `POST /inventories/deduct` - 扣减库存
-- `GET /inventories/product/{productId}` - 根据商品ID获取库存信息
+- `POST /api/inventories/deduct` - 扣减库存
+- `GET /api/inventories/product/{productId}` - 根据商品ID获取库存信息
 
 ### 邮件服务接口
 
-- `POST /email/send-custom` - 发送自定义邮件
+- `POST /api/emails/send-custom` - 发送自定义邮件
 
 ## 消息队列配置说明
 

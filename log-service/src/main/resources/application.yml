@@ -11,7 +11,7 @@ spring:
   application:
     # 应用名称
     name: log-service
-  
+
   # Nacos配置
   cloud:
     nacos:
@@ -33,25 +33,16 @@ spring:
 
 # RocketMQ配置
 rocketmq:
+  # 是否启用RocketMQ，设置为false时不会在启动时连接MQ
+  enable: false
   # NameServer地址
   name-server: ${ROCKETMQ_NAMESRV_ADDR:localhost:9876}
-  producer:
-    # 生产者组名
-    group: log-producer-group
   # 消费者配置
   consumer:
     # 消费者启动失败重试次数
-    retry-times: 3
+    retry-times: 0
     # 消费者启动延迟时间(毫秒)
     delay-time: 5000
-
-# Actuator监控配置
-management:
-  endpoints:
-    web:
-      # 暴露所有端点
-      exposure:
-        include: "*"
 
 # 日志级别配置
 logging:

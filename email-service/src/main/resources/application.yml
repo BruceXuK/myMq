@@ -12,7 +12,7 @@ spring:
   application:
     # 应用名称
     name: email-service
-  
+
   # Nacos配置
   cloud:
     nacos:
@@ -51,10 +51,16 @@ rocketmq:
   producer:
     # 生产者组
     group: email-service-producer
+    # 消息发送超时时间(毫秒)
+    send-message-timeout: 3000
+    # 消息发送失败重试次数
+    retry-times-when-send-failed: 2
+    # 异步消息发送失败重试次数
+    retry-times-when-send-async: 2
   # 消费者配置
   consumer:
     # 消费者启动失败重试次数
-    retry-times: 3
+    retry-times: 0
     # 消费者启动延迟时间(毫秒)
     delay-time: 5000
 
@@ -65,14 +71,6 @@ app:
     admin:
       # 管理员邮箱地址
       email-address: ${ADMIN_EMAIL_ADDRESS:your_email@gmail.com}
-
-# Actuator监控配置
-management:
-  endpoints:
-    web:
-      # 暴露所有端点
-      exposure:
-        include: "*"
 
 # 日志级别配置
 logging:

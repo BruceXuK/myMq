@@ -110,7 +110,22 @@
             <!-- 内部模块版本管理 -->
             <dependency>
                 <groupId>com.bruce.mq</groupId>
-                <artifactId>shared</artifactId>
+                <artifactId>shared-core</artifactId>
+                <version>${myMq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bruce.mq</groupId>
+                <artifactId>shared-email</artifactId>
+                <version>${myMq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bruce.mq</groupId>
+                <artifactId>shared-order</artifactId>
+                <version>${myMq.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.bruce.mq</groupId>
+                <artifactId>shared-log</artifactId>
                 <version>${myMq.version}</version>
             </dependency>
             <dependency>

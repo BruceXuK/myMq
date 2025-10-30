@@ -1,10 +1,11 @@
 package com.bruce.mq.email;
 
+import com.bruce.mq.shared.util.StartupTimeTracker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 
 /**
  * 邮件服务主应用类
@@ -23,6 +24,10 @@ public class EmailServiceApplication {
      * @param args 启动参数
      */
     public static void main(String[] args) {
-        SpringApplication.run(EmailServiceApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(EmailServiceApplication.class, args);
+        
+        // 打印启动时间报告
+        StartupTimeTracker startupTimeTracker = context.getBean(StartupTimeTracker.class);
+        startupTimeTracker.printReport();
     }
 }

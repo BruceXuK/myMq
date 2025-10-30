@@ -66,13 +66,11 @@ spring:
         - AddRequestHeader=X-Forwarded-By, api-gateway
         # 添加响应头
         - AddResponseHeader=X-Response-By, api-gateway
-
-# Actuator监控配置
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+      
+      # 禁用grpc相关功能以避免依赖问题
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
 
 # 日志级别配置
 logging:

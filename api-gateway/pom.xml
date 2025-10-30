@@ -31,12 +31,6 @@
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
-        <!-- Spring Boot Actuator -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
         <!-- Spring Cloud Commons -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -50,11 +44,22 @@
             <version>${spring-cloud-alibaba.version}</version>
         </dependency>
 
+        <!-- gRPC dependencies to fix NoClassDefFoundError -->
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty</artifactId>
+            <version>1.53.0</version>
+        </dependency>
+
         <!-- Spring Boot Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.bruce.mq</groupId>
+            <artifactId>shared-core</artifactId>
         </dependency>
     </dependencies>
 

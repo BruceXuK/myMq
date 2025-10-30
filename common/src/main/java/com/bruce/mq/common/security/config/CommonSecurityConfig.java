@@ -21,8 +21,6 @@ public class CommonSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 // 对所有请求进行认证
                 .authorizeRequests()
-                // 允许访问 Actuator endpoints
-                .antMatchers("/actuator/**").permitAll()
                 // 其他所有请求都需要认证
                 .anyRequest().authenticated()
                 .and()

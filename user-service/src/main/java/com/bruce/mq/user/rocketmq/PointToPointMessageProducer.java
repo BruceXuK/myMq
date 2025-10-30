@@ -1,6 +1,6 @@
 package com.bruce.mq.user.rocketmq;
 
-import com.bruce.mq.shared.message.model.PointToPointMessage;
+import com.bruce.mq.shared.order.message.model.PointToPointMessage;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
