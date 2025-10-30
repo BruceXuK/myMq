@@ -17,19 +17,19 @@ import java.util.Map;
 
 /**
  * 用户控制器
- * 
+ *
  * @author BruceXuK
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
     private UserServiceImpl userService;
-    
+
     @Autowired
     private MaintenanceNotificationProducer maintenanceNotificationProducer;
-    
+
     @Autowired
     private PointToPointMessageProducer pointToPointMessageProducer;
 
@@ -131,7 +131,7 @@ public class UserController {
                 request.getEndTime(),
                 request.isUrgent()
             );
-            
+
             // 发送维护通知
             maintenanceNotificationProducer.sendMaintenanceNotification(notification);
 
@@ -144,7 +144,7 @@ public class UserController {
             return ResponseEntity.status(500).body(response);
         }
     }
-    
+
     /**
      * 发送点对点消息
      *

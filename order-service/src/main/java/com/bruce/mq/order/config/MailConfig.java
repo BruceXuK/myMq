@@ -6,13 +6,13 @@ import org.springframework.stereotype.Component;
 /**
  * 邮件配置类
  * 用于读取和管理邮件相关配置
- * 
+ *
  * @author BruceXuK
  */
 @Component
-@ConfigurationProperties(prefix = "mail")
+@ConfigurationProperties(prefix = "email")
 public class MailConfig {
-    
+
     /**
      * 默认收件人邮箱地址
      */

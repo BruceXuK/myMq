@@ -29,6 +29,13 @@
             <version>2.2.3</version>
         </dependency>
         
+        <!-- Nacos Discovery -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <version>${spring-cloud-alibaba.version}</version>
+        </dependency>
+        
         <!-- 共享模块 -->
         <dependency>
             <groupId>com.bruce.mq</groupId>

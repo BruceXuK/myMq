@@ -2,6 +2,7 @@ package com.bruce.mq.user;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @author BruceXuK
  */
 @SpringBootApplication
+@EnableDiscoveryClient
 @ComponentScan(basePackages = {"com.bruce.mq.user", "com.bruce.mq.shared"})
 public class UserApplication {
 

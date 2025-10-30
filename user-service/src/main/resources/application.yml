@@ -12,6 +12,14 @@ spring:
   application:
     # 应用名称
     name: user-service
+  
+  # Nacos配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
 
 # RocketMQ配置
 rocketmq:
@@ -40,7 +48,7 @@ management:
       exposure:
         include: "*"
 
-# 日志配置
+# 日志级别配置
 logging:
   level:
     # 根日志级别
@@ -48,6 +56,3 @@ logging:
     # 项目日志级别
     com.bruce.mq: DEBUG
     org.apache.rocketmq: WARN
-  # 日志格式
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"

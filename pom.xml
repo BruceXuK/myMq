@@ -38,6 +38,8 @@
         <module>email-service</module>
         <!-- 日志服务模块 -->
         <module>log-service</module>
+        <!-- API网关模块 -->
+        <module>api-gateway</module>
     </modules>
 
     <!-- 项目属性配置 -->
@@ -97,6 +99,12 @@
                 <groupId>org.apache.rocketmq</groupId>
                 <artifactId>rocketmq-spring-boot-starter</artifactId>
                 <version>${rocketmq.version}</version>
+            </dependency>
+
+            <!-- Spring Cloud Alibaba Nacos Discovery -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
             </dependency>
 
             <!-- 内部模块版本管理 -->

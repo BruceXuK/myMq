@@ -14,11 +14,11 @@ import java.util.Map;
 /**
  * 邮件服务控制器
  * 提供邮件发送的REST API接口
- * 
+ *
  * @author BruceXuK
  */
 @RestController
-@RequestMapping("/email")
+@RequestMapping("/emails")
 public class EmailController {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailController.class);

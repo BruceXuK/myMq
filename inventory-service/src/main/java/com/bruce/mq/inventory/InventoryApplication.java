@@ -3,6 +3,7 @@ package com.bruce.mq.inventory;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.messaging.converter.StringMessageConverter;
 
 /**
@@ -12,6 +13,7 @@ import org.springframework.messaging.converter.StringMessageConverter;
  * @author BruceXuK
  */
 @SpringBootApplication(scanBasePackages = {"com.bruce.mq.inventory", "com.bruce.mq.shared"})
+@EnableDiscoveryClient
 public class InventoryApplication {
 
     /**

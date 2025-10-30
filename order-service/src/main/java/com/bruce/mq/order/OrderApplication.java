@@ -2,6 +2,7 @@ package com.bruce.mq.order;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * 订单服务启动类
@@ -10,6 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author BruceXuK
  */
 @SpringBootApplication(scanBasePackages = {"com.bruce.mq.order", "com.bruce.mq.shared"})
+@EnableDiscoveryClient
 public class OrderApplication {
 
     /**

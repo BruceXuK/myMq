@@ -12,6 +12,14 @@ spring:
   application:
     # 应用名称
     name: email-service
+  
+  # Nacos配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
   # 邮件配置
   mail:
     # 邮件服务器主机

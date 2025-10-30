@@ -1,0 +1,81 @@
+# ========================================
+# API网关配置文件
+# @author BruceXuK
+# ========================================
+
+server:
+  # 服务器端口
+  port: 8092
+
+spring:
+  application:
+    # 应用名称
+    name: api-gateway
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+    gateway:
+      routes:
+        # 订单服务路由
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - StripPrefix=1
+
+        # 用户服务路由
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+          filters:
+            - StripPrefix=1
+
+        # 库存服务路由
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/inventory/**
+          filters:
+            - StripPrefix=1
+
+        # 邮件服务路由
+        - id: email-service
+          uri: lb://email-service
+          predicates:
+            - Path=/api/emails/**
+          filters:
+            - StripPrefix=1
+
+        # 日志服务路由
+        - id: log-service
+          uri: lb://log-service
+          predicates:
+            - Path=/api/log/**
+          filters:
+            - StripPrefix=1
+
+      # 全局过滤器
+      default-filters:
+        # 添加请求头
+        - AddRequestHeader=X-Forwarded-By, api-gateway
+        # 添加响应头
+        - AddResponseHeader=X-Response-By, api-gateway
+
+# Actuator监控配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+# 日志级别配置
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.apache.rocketmq: WARN

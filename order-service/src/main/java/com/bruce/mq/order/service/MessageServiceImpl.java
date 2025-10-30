@@ -29,17 +29,17 @@ import java.math.BigDecimal;
  */
 @Service
 public class MessageServiceImpl implements MessageService {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
-    
+
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${email-service.url:http://localhost:8088}")
-    private String emailServiceUrl;
+    @Value("${gateway.url:http://localhost:8092}")
+    private String gatewayUrl;
 
     @Autowired
     private MailConfig mailConfig;
@@ -207,10 +207,10 @@ public class MessageServiceImpl implements MessageService {
             logger.error("发送订单超时取消通知邮件失败，订单号: {}", order.getOrderNo(), e);
         }
     }
-    
+
     /**
      * 发送支付成功通知邮件
-     * 
+     *
      * @param order 订单信息
      */
     @Override
@@ -252,29 +252,29 @@ public class MessageServiceImpl implements MessageService {
             logger.error("发送支付成功通知邮件失败，订单号: " + order.getOrderNo(), e);
         }
     }
-    
+
     /**
      * 通过HTTP调用邮件服务发送邮件
-     * 
+     *
      * @param emailRequest 邮件请求对象
      */
     private void sendEmailViaHttp(EmailRequest emailRequest) {
         try {
-            String url = emailServiceUrl + "/email/send-custom";
-            
+            String url = gatewayUrl + "/api/emails/send-custom";
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            
+
             HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest, headers);
-            
+
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-            
+
             if (!response.getStatusCode().is2xxSuccessful()) {
                 logger.error("通过HTTP调用邮件服务发送邮件失败，状态码: {}", response.getStatusCode());
                 throw new RuntimeException("邮件服务调用失败，状态码: " + response.getStatusCode());
             }
-            
-            logger.info("通过HTTP调用邮件服务发送邮件成功，收件人: {}, 主题: {}", 
+
+            logger.info("通过HTTP调用邮件服务发送邮件成功，收件人: {}, 主题: {}",
                 emailRequest.getEmailAddress(), emailRequest.getSubject());
         } catch (Exception e) {
             logger.error("通过HTTP调用邮件服务发送邮件异常", e);

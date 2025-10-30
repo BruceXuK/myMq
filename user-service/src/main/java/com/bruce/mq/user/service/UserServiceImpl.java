@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService {
      */
     private void sendEmailViaHttp(EmailCode emailCode) {
         try {
-            String url = mailConfig.getEmailServiceUrl() + "/email/send-custom";
+            String url = mailConfig.getGatewayUrl() + "/api/emails/send-custom";
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);

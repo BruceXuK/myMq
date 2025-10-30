@@ -36,8 +36,9 @@ public class MaintenanceNotificationListener implements RocketMQListener<Mainten
     @Value("${app.mail.admin.email-address:your_email_address@qq.com}")
     private String adminEmail;
     
-    @Value("${email-service.url:http://localhost:8088}")
-    private String emailServiceUrl;
+    // 从配置文件或环境变量中获取API网关地址
+    @Value("${gateway.url:http://localhost:8092}")
+    private String gatewayUrl;
     
     @Autowired
     private RestTemplate restTemplate;
@@ -116,7 +117,7 @@ public class MaintenanceNotificationListener implements RocketMQListener<Mainten
             emailRequest.setContent(content);
 
             // 通过HTTP调用邮件服务发送邮件
-            String url = emailServiceUrl + "/email/send-custom";
+            String url = gatewayUrl + "/api/emails/send-custom";
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);

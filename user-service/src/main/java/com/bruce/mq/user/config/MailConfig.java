@@ -12,10 +12,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MailConfig {
     
-    @Value("${email-service.url:http://localhost:8088}")
-    private String emailServiceUrl;
+    @Value("${gateway.url:http://localhost:8092}")
+    private String gatewayUrl;
 
-    public String getEmailServiceUrl() {
-        return emailServiceUrl;
+    public String getGatewayUrl() {
+        return gatewayUrl;
     }
 }

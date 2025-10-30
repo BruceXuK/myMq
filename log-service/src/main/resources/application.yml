@@ -11,6 +11,14 @@ spring:
   application:
     # 应用名称
     name: log-service
+  
+  # Nacos配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
 
   # Elasticsearch配置
   elasticsearch:

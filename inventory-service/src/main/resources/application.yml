@@ -12,25 +12,23 @@ spring:
   application:
     # 应用名称
     name: inventory-service
+  
+  # Nacos配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
 # RocketMQ配置
 rocketmq:
   # NameServer地址
   name-server: ${ROCKETMQ_NAMESRV_ADDR:localhost:9876}
-  # 生产者配置
-  producer:
-    # 生产者组
-    group: inventory-producer-group
-  # 消费者配置
-  consumer:
-    # 消费者启动失败重试次数
-    retry-times: 3
-    # 消费者启动延迟时间(毫秒)
-    delay-time: 5000
 
-# 邮件服务配置
-email-service:
-  # 邮件服务URL
-  url: http://localhost:8088
+# API网关配置
+gateway:
+  # API网关URL
+  url: http://localhost:8092
 
 # 应用自定义配置
 app:
