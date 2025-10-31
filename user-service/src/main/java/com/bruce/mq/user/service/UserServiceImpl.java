@@ -1,5 +1,6 @@
 package com.bruce.mq.user.service;
 
+import com.bruce.mq.shared.email.model.MassEmailRequest;
 import com.bruce.mq.user.config.MailConfig;
 import com.bruce.mq.user.repository.UserRepository;
 import com.bruce.mq.shared.user.model.User;
@@ -15,10 +16,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 
 /**
  * 用户服务实现类
- * 
+ *
  * @author BruceXuK
  */
 @Slf4j
@@ -30,13 +32,16 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private RestTemplate restTemplate;
-    
+
     @Autowired
     private MailConfig mailConfig;
 
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
+
     /**
      * 用户注册
-     * 
+     *
      * @param registerRequest 用户注册请求
      * @return 注册成功的用户
      */
@@ -75,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据邮箱查找用户
-     * 
+     *
      * @param email 邮箱地址
      * @return 用户信息
      */
@@ -86,7 +91,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 检查邮箱是否已被注册
-     * 
+     *
      * @param email 邮箱地址
      * @return 如果已被注册返回true，否则返回false
      */
@@ -97,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 发送验证码到指定邮箱
-     * 
+     *
      * @param email 邮箱地址
      * @return 发送的验证码
      */
@@ -112,7 +117,7 @@ public class UserServiceImpl implements UserService {
         // 发送验证码邮件
         EmailCode emailCode = new EmailCode(email, code, "用户注册验证码",
                 "您的注册验证码是：" + code + "，请在10分钟内使用。");
-        
+
         // 通过HTTP调用邮件服务发送邮件
         sendEmailViaHttp(emailCode);
         log.info("已发送验证码邮件，邮箱: " + email + "，验证码: " + code);
@@ -122,7 +127,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 验证验证码是否正确
-     * 
+     *
      * @param email 邮箱地址
      * @param code 验证码
      * @return 验证成功返回true，否则返回false
@@ -132,39 +137,78 @@ public class UserServiceImpl implements UserService {
         String storedCode = userRepository.getVerificationCode(email);
         return storedCode != null && storedCode.equals(code);
     }
-    
+
     /**
      * 通过HTTP调用邮件服务发送邮件
-     * 
+     *
      * @param emailCode 邮件验证码对象
      */
     private void sendEmailViaHttp(EmailCode emailCode) {
         try {
             String url = mailConfig.getGatewayUrl() + "/api/emails/send-custom";
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            
+
             // 转换为EmailRequest对象
             EmailRequest emailRequest = new EmailRequest(
                 emailCode.getEmailAddress(),
                 emailCode.getSubject(),
                 emailCode.getContent()
             );
-            
+
             HttpEntity<EmailRequest> request = new HttpEntity<>(emailRequest, headers);
-            
+
             ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-            
+
             if (!response.getStatusCode().is2xxSuccessful()) {
                 log.error("通过HTTP调用邮件服务发送邮件失败，状态码: {}", response.getStatusCode());
                 throw new RuntimeException("邮件服务调用失败，状态码: " + response.getStatusCode());
             }
-            
-            log.info("通过HTTP调用邮件服务发送邮件成功，收件人: {}, 主题: {}", 
+
+            log.info("通过HTTP调用邮件服务发送邮件成功，收件人: {}, 主题: {}",
                 emailCode.getEmailAddress(), emailCode.getSubject());
         } catch (Exception e) {
             log.error("通过HTTP调用邮件服务发送邮件异常", e);
+            throw new RuntimeException("邮件服务调用异常", e);
+        }
+    }
+
+    /**
+     * 获取所有用户的邮箱地址
+     *
+     * @return 所有用户的邮箱地址列表
+     */
+    @Override
+    public java.util.List<String> getAllEmails() {
+        return userRepository.getAllEmails();
+    }
+
+    /**
+     * 发送群发邮件请求
+     *
+     * @param massEmailRequest 群发邮件请求对象
+     */
+    public void sendMassEmailRequest(MassEmailRequest massEmailRequest) {
+        try {
+            String url = mailConfig.getGatewayUrl() + "/api/email-service/mass-emails/send";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            HttpEntity<MassEmailRequest> request =
+                new HttpEntity<>(massEmailRequest, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                log.error("通过HTTP调用邮件服务发送群发邮件失败，状态码: {}", response.getStatusCode());
+                throw new RuntimeException("邮件服务调用失败，状态码: " + response.getStatusCode());
+            }
+
+            log.info("通过HTTP调用邮件服务发送群发邮件成功");
+        } catch (Exception e) {
+            log.error("通过HTTP调用邮件服务发送群发邮件异常", e);
             throw new RuntimeException("邮件服务调用异常", e);
         }
     }

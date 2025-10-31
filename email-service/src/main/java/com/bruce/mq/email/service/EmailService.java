@@ -3,7 +3,6 @@ package com.bruce.mq.email.service;
 import com.bruce.mq.shared.email.model.EmailCode;
 import com.bruce.mq.shared.email.model.EmailRequest;
 import com.bruce.mq.shared.email.enums.EmailType;
-import com.bruce.mq.shared.util.RetryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,8 +85,9 @@ public class EmailService {
             return false;
         }
 
-        try {
-            return RetryUtils.executeWithRetry(() -> {
+        // 尝试发送邮件（最多重试3次）
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setFrom(fromEmail);
                 message.setTo(to);
@@ -99,10 +99,25 @@ public class EmailService {
                 javaMailSender.send(message);
                 logger.info("{}发送成功: {}，主题: {}", type.getDescription(), to, subject);
                 return true;
-            }, 3, "发送邮件[" + type.getDescription() + "]");
-        } catch (Exception e) {
-            logger.error("{}发送最终失败: {}，主题: {}", type.getDescription(), to, subject, e);
-            return false;
+            } catch (Exception e) {
+                logger.warn("{}发送失败: {}，主题: {} (第{}次)", type.getDescription(), to, subject, attempt, e);
+                
+                // 如果不是最后一次尝试，等待一段时间再重试
+                if (attempt < 3) {
+                    try {
+                        long waitTime = 1000 * attempt; // 等待时间递增
+                        logger.debug("等待{}毫秒后重试发送邮件", waitTime);
+                        Thread.sleep(waitTime);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        logger.warn("等待重试时线程被中断", ie);
+                        return false;
+                    }
+                }
+            }
         }
+        
+        logger.error("{}发送最终失败: {}，主题: {}", type.getDescription(), to, subject);
+        return false;
     }
 }

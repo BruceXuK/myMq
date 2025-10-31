@@ -3,6 +3,8 @@ package com.bruce.mq.shared.user.service;
 import com.bruce.mq.shared.user.model.User;
 import com.bruce.mq.shared.user.dto.UserRegisterRequest;
 
+import java.util.List;
+
 /**
  * 用户服务接口
  * 
@@ -50,4 +52,11 @@ public interface UserService {
      * @return 验证成功返回true，否则返回false
      */
     boolean verifyCode(String email, String code);
+    
+    /**
+     * 获取所有用户的邮箱地址
+     *
+     * @return 所有用户的邮箱地址列表
+     */
+    List<String> getAllEmails();
 }

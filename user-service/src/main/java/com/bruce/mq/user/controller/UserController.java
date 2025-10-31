@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,7 +35,58 @@ public class UserController {
     private PointToPointMessageProducer pointToPointMessageProducer;
 
     /**
-     * 发送验证码
+     * 发送群发活动邮件给所有会员
+     *
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     * @return 发送结果
+     */
+    @PostMapping("/mass-email")
+    public ResponseEntity<Map<String, Object>> sendMassEmailToAllUsers(
+            @RequestParam String subject,
+            @RequestParam String content) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 获取所有用户的邮箱地址
+            List<String> allEmails = userService.getAllEmails();
+            
+            if (allEmails.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "没有找到任何用户邮箱");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // 创建群发邮件请求对象
+            com.bruce.mq.shared.email.model.MassEmailRequest massEmailRequest = 
+                new com.bruce.mq.shared.email.model.MassEmailRequest(allEmails, subject, content);
+
+            // 发送群发邮件请求到消息队列
+            userService.sendMassEmailRequest(massEmailRequest);
+
+            response.put("success", true);
+            response.put("message", "群发邮件请求已发送，总共将发送给" + allEmails.size() + "位用户");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "发送群发邮件请求失败: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    /**
+     * 获取所有用户的邮箱地址
+     *
+     * @return 所有用户的邮箱地址列表
+     */
+    @GetMapping("/emails")
+    public ResponseEntity<List<String>> getAllEmails() {
+        List<String> emails = userService.getAllEmails();
+        return ResponseEntity.ok(emails);
+    }
+
+    /**
+     * 发送验证码到指定邮箱
      *
      * @param email 邮箱地址
      * @return 发送结果

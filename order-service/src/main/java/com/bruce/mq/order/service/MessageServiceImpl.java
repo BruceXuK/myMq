@@ -3,7 +3,6 @@ package com.bruce.mq.order.service;
 import com.bruce.mq.shared.order.model.Order;
 import com.bruce.mq.shared.email.model.EmailRequest;
 import com.bruce.mq.order.config.MailConfig;
-import com.bruce.mq.shared.util.RetryUtils;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,12 +53,9 @@ public class MessageServiceImpl implements MessageService {
     public void deductInventory(Order order) {
         // 通过RocketMQ发送消息到库存服务扣减库存
         try {
-            RetryUtils.executeWithRetry(() -> {
-                rocketMQTemplate.syncSend("inventory-topic:ORDER_CREATED",
-                    MessageBuilder.withPayload(order)
-                            .build());
-                return null;
-            }, 3, "发送库存扣减消息");
+            rocketMQTemplate.syncSend("inventory-topic:ORDER_CREATED",
+                MessageBuilder.withPayload(order)
+                        .build());
             logger.info("已通过RocketMQ发送消息通知库存服务扣减库存，订单号: {}", order.getOrderNo());
         } catch (Exception e) {
             logger.error("发送库存扣减消息失败，订单号: " + order.getOrderNo(), e);
@@ -76,11 +72,8 @@ public class MessageServiceImpl implements MessageService {
     public void rollbackInventory(Order order) {
         // 通过RocketMQ发送消息到库存服务回滚库存
         try {
-            RetryUtils.executeWithRetry(() -> {
-                rocketMQTemplate.syncSend("inventory-topic",
-                    MessageBuilder.withPayload(order).setHeader(MessageConst.PROPERTY_TAGS, "ORDER_CANCELLED").build());
-                return null;
-            }, 3, "发送库存回滚消息");
+            rocketMQTemplate.syncSend("inventory-topic",
+                MessageBuilder.withPayload(order).setHeader(MessageConst.PROPERTY_TAGS, "ORDER_CANCELLED").build());
             logger.info("已通过RocketMQ发送消息通知库存服务回滚库存，订单号: {}", order.getOrderNo());
         } catch (Exception e) {
             logger.error("发送库存回滚消息失败，订单号: " + order.getOrderNo(), e);
@@ -124,10 +117,7 @@ public class MessageServiceImpl implements MessageService {
 
             // 通过HTTP调用邮件服务发送邮件
             logger.info("准备通过HTTP调用邮件服务发送订单确认邮件，订单号: {}", order.getOrderNo());
-            RetryUtils.executeWithRetry(() -> {
-                sendEmailViaHttp(emailRequest);
-                return null;
-            }, 3, "发送订单确认邮件");
+            sendEmailViaHttp(emailRequest);
             logger.info("已通过HTTP调用邮件服务发送订单确认邮件，订单号: {}", order.getOrderNo());
         } catch (Exception e) {
             logger.error("发送订单确认邮件失败，订单号: " + order.getOrderNo(), e);
@@ -145,12 +135,9 @@ public class MessageServiceImpl implements MessageService {
     public void sendOrderTimeoutCheckMessage(Order order, int delayLevel) {
         try {
             // 通过RocketMQ发送延迟消息，delayLevel指定延迟时间
-            RetryUtils.executeWithRetry(() -> {
-                rocketMQTemplate.syncSend("order-timeout-topic",
-                    MessageBuilder.withPayload(order).build(),
-                    3000, delayLevel);
-                return null;
-            }, 3, "发送订单超时检查延迟消息");
+            rocketMQTemplate.syncSend("order-timeout-topic",
+                MessageBuilder.withPayload(order).build(),
+                3000, delayLevel);
             logger.info("已发送订单超时检查延迟消息，订单号: {}，延迟级别: {}", order.getOrderNo(), delayLevel);
         } catch (Exception e) {
             logger.error("发送订单超时检查延迟消息失败，订单号: " + order.getOrderNo(), e);
@@ -198,10 +185,7 @@ public class MessageServiceImpl implements MessageService {
 
             // 通过HTTP调用邮件服务发送邮件
             logger.info("准备通过HTTP调用邮件服务发送订单超时取消通知邮件，订单号: {}", order.getOrderNo());
-            RetryUtils.executeWithRetry(() -> {
-                sendEmailViaHttp(emailRequest);
-                return null;
-            }, 3, "发送订单超时取消通知邮件");
+            sendEmailViaHttp(emailRequest);
             logger.info("已通过HTTP调用邮件服务发送订单超时取消通知邮件，订单号: {}", order.getOrderNo());
         } catch (Exception e) {
             logger.error("发送订单超时取消通知邮件失败，订单号: {}", order.getOrderNo(), e);
@@ -243,10 +227,7 @@ public class MessageServiceImpl implements MessageService {
 
             // 通过HTTP调用邮件服务发送邮件
             logger.info("准备通过HTTP调用邮件服务发送支付成功通知邮件，订单号: {}", order.getOrderNo());
-            RetryUtils.executeWithRetry(() -> {
-                sendEmailViaHttp(emailRequest);
-                return null;
-            }, 3, "发送支付成功通知邮件");
+            sendEmailViaHttp(emailRequest);
             logger.info("已通过HTTP调用邮件服务发送支付成功通知邮件，订单号: {}", order.getOrderNo());
         } catch (Exception e) {
             logger.error("发送支付成功通知邮件失败，订单号: " + order.getOrderNo(), e);

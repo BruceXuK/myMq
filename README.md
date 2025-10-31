@@ -278,10 +278,10 @@ mvn spring-boot:run
 - Name Server: `localhost:9876`
 - 不同服务有不同的Producer Group配置
   - 用户服务: `user-service-producer`
-  - 订单服务: `order-producer-group`
+  - 订单服务: `order-service-producer`
   - 库存服务: `inventory-producer-group`
   - 邮件服务: `email-service-producer`
-  - 日志服务: `log-producer-group`
+  - 日志服务: `log-service-producer`
 
 ### RocketMQ 延迟消息级别
 
@@ -423,7 +423,7 @@ spring:
 rocketmq:
   name-server: ${ROCKETMQ_NAMESRV_ADDR:localhost:9876}
   producer:
-    group: log-producer-group
+    group: log-service-producer
 ```
 
 ### 其他服务配置

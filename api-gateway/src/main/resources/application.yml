@@ -15,50 +15,50 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-        username: nacos
-        password: nacos
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
     gateway:
       routes:
         # 订单服务路由
         - id: order-service
           uri: lb://order-service
           predicates:
-            - Path=/api/orders/**
+            - Path=/api/order-service/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
         # 用户服务路由
         - id: user-service
           uri: lb://user-service
           predicates:
-            - Path=/api/users/**
+            - Path=/api/user-service/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
         # 库存服务路由
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
-            - Path=/api/inventory/**
+            - Path=/api/inventory-service/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
         # 邮件服务路由
         - id: email-service
           uri: lb://email-service
           predicates:
-            - Path=/api/emails/**
+            - Path=/api/email-service/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
         # 日志服务路由
         - id: log-service
           uri: lb://log-service
           predicates:
-            - Path=/api/log/**
+            - Path=/api/log-service/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=2
 
       # 全局过滤器
       default-filters:
